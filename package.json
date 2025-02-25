@@ -1,0 +1,30 @@
+{
+  "name": "airbnb-functional-prgmg",
+  "version": "1.0.0",
+  "description": "Functional programming demonstration that uses Airbnb data to analyse various metrics using map, filter and other functions.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "docs": "jsdoc -c jsdoc.json",
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vinaldsz/Airbnb-functional-prgmg.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vinaldsz/Airbnb-functional-prgmg/issues"
+  },
+  "homepage": "https://github.com/vinaldsz/Airbnb-functional-prgmg#readme",
+  "devDependencies": {
+    "eslint": "^9.21.0",
+    "jsdoc": "^4.0.4"
+  },
+  "dependencies": {
+    "csv-parser": "^3.2.0"
+  }
+}
