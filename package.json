@@ -2,7 +2,7 @@
   "name": "airbnb-functional-prgmg",
   "version": "1.0.0",
   "description": "Functional programming demonstration that uses Airbnb data to analyse various metrics using map, filter and other functions.",
-  "main": "index.js",
+  "main": "cli.js",
   "type": "module",
   "scripts": {
     "docs": "jsdoc -c jsdoc.json",
