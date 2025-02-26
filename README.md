@@ -70,8 +70,8 @@ function filterListings({
     return true;
   });
   return handler; // Return handler to allow chaining
-} ```
-`
+} 
+```
 ### Why is it a Pure Function?
 
 1. **No Mutation of External State**: The function does not modify the original `_listings` array. Instead, it returns a new filtered list based on the provided criteria.
@@ -100,7 +100,8 @@ function filterListingsImpure({
     }
   });
   return handler; // Return handler to allow chaining, but original _listings array is mutated
-}```
+}
+```
 
 # Why is it Impure ?
 
