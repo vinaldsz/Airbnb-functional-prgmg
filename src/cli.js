@@ -123,13 +123,11 @@ async function main() {
           // We'll do something quick by rewriting a small function here or adapt your handler.
           // Let's do something quick:
           // (This snippet is purely for demonstration. A more robust approach is to have a dedicated "getCurrentListings()" method.)
-          const ranking = airbnbHandler.computeListingsByHost();
-          // If we want just the "listings," consider using the stats logic or create a new function in the handler that returns them
-          // We'll just do: 
-          // 1) ranking = the output for host listing
-          // 2) or we can do: "stats" if user typed it. 
-          console.log('Exporting current listings is not directly shown. Add a method if needed.');
-          console.log('For now, we will show hostRanking or stats. Re-run and choose "hostRanking" or "stats".');
+          const listings = airbnbHandler.getListings();
+          await airbnbHandler.exportResults(outputPath, listings);
+          console.log(`\nListings exported to: ${outputPath}\n`);
+          //console.log('Exporting current listings is not directly shown. Add a method if needed.');
+          //console.log('For now, we will show hostRanking or stats. Re-run and choose "hostRanking" or "stats".');
         } else if (exportChoice === 'stats') {
           const stats = airbnbHandler.computeStats();
           await airbnbHandler.exportResults(outputPath, stats);

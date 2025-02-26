@@ -96,15 +96,15 @@ function createAirBnBDataHandler(initialListings = []) {
     const count = _listings.length;
     let averagePricePerRoom = 0;
     if (count > 0) {
-      // For example: total price / total rooms
-      const totalPrice = _listings.reduce((sum, l) => sum + l.price, 0);
-      const totalRooms = _listings.reduce((sum, l) => sum + Number(l.bedrooms), 0);
-      averagePricePerRoom = totalRooms === 0 ? 0 : totalPrice / totalRooms;
+        // For example: total price / total rooms
+        const totalPrice = _listings.reduce((sum, l) => sum + l.price, 0);
+        const totalRooms = _listings.reduce((sum, l) => sum + Number(l.bedrooms), 0);
+        averagePricePerRoom = totalRooms === 0 ? 0 : totalPrice / totalRooms;
     }
 
     return {
-      count,
-      averagePricePerRoom,
+        count,
+        averagePricePerRoom,
     };
   }
 
@@ -114,17 +114,21 @@ function createAirBnBDataHandler(initialListings = []) {
    */
   function computeListingsByHost() {
     const hostMap = _listings.reduce((acc, listing) => {
-      const hostKey = listing.host_id || 'unknown';
-      acc[hostKey] = (acc[hostKey] || 0) + 1;
-      return acc;
+        const hostKey = String(listing.host_id || 'unknown'); // Ensure consistent key format
+        acc[hostKey] = (acc[hostKey] || 0) + 1;
+        return acc;
     }, {});
-
+  
     const ranking = Object.entries(hostMap)
-      .map(([host_id, count]) => ({ host_id, count }))
-      .sort((a, b) => b.count - a.count);
+        .map(([host_id, count]) => ({ host_id, count }))
+        .sort((a, b) => b.count - a.count) // Sort in descending order
 
+        // Assign ranks (1st place to the host with most listings)
+        .map((entry, index) => ({ rank: index + 1, ...entry }));
+  
     return ranking;
   }
+  
 
   /**
    * Exports the current listings array (or a stats object) to a user-specified file.

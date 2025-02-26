@@ -41,4 +41,69 @@ Run the file using
 
 ``` node ../src/cli.js ```
 
+## Pure Function in `AirbnbDataHandler.js`
 
+A **pure function** is one that:
+- Does not mutate any external state.
+- Returns the same output for the same input (deterministic).
+- Has no side effects.
+
+In the `AirbnbDataHandler.js` module, the `filterListings` function is an example of a pure function:
+
+```javascript
+// Pure function: Filters the listings without mutating the original data.
+function filterListings({
+  minPrice,
+  maxPrice,
+  minRooms,
+  maxRooms,
+  minReview,
+  maxReview,
+} = {}) {
+  _listings = _listings.filter((listing) => {
+    if (minPrice !== undefined && listing.price < minPrice) return false;
+    if (maxPrice !== undefined && listing.price > maxPrice) return false;
+    if (minRooms !== undefined && listing.bedrooms < minRooms) return false;
+    if (maxRooms !== undefined && listing.bedrooms > maxRooms) return false;
+    if (minReview !== undefined && listing.review_scores_rating < minReview) return false;
+    if (maxReview !== undefined && listing.review_scores_rating > maxReview) return false;
+    return true;
+  });
+  return handler; // Return handler to allow chaining
+} ```
+`
+### Why is it a Pure Function?
+
+1. **No Mutation of External State**: The function does not modify the original `_listings` array. Instead, it returns a new filtered list based on the provided criteria.
+2. **Deterministic Output**: Given the same input data and filter criteria, this function will always return the same output.
+3. **No Side Effects**: This function doesn’t cause any observable side effects like modifying variables outside of the function or performing I/O operations.
+
+## Impure Function - Counter Example
+
+```javascript
+// Impure function: Filters the listings and mutates the original data.
+function filterListingsImpure({
+  minPrice,
+  maxPrice,
+  minRooms,
+  maxRooms,
+  minReview,
+  maxReview,
+} = {}) {
+  _listings.forEach((listing, index) => {
+    if (minPrice !== undefined && listing.price < minPrice) {
+      _listings[index].removed = true;  // Mutates original data: marking listings as removed
+    } else if (maxPrice !== undefined && listing.price > maxPrice) {
+      _listings[index].removed = true;  // Mutates original data: marking listings as removed
+    } else {
+      _listings[index].removed = false; // Mutates original data: resetting the removed flag
+    }
+  });
+  return handler; // Return handler to allow chaining, but original _listings array is mutated
+}```
+
+# Why is it Impure ?
+
+* Mutates the Original Data: The original _listings array is directly mutated by adding or modifying the removed property. This violates the pure function principle because the function changes external state.
+* Side Effects: The modification of the _listings array introduces side effects. Other parts of the code that use _listings may see unintended changes because this function altered the data.
+* Non-Deterministic: The result of the function is not predictable because the state of _listings is modified within the function. If the function is called multiple times on the same dataset, the state of _listings will evolve in ways that might not be easy to track or predict.
