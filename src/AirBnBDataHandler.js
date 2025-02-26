@@ -4,7 +4,7 @@
  * to load and process AirBnB listings data.
  */
 
-import { readFile, writeFile } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 import csv from 'csv-parser';
 import { createReadStream } from 'node:fs';
 
@@ -47,6 +47,12 @@ function createAirBnBDataHandler(initialListings = []) {
   // The data we will process (make sure it is only mutated in pure ways, or replaced).
   let _listings = [...initialListings];
 
+  //High demand listings are those with availability_30 < 10 and number_of_reviews > 100 - Creative Addition
+  function getHighDemandListings() {
+    return _listings.filter((listing) => {
+      return listing.availability_30 < 10 && listing.number_of_reviews > 100;
+    });
+  }
   /**
    * Filters the listings based on price, number_of_rooms, and/or review_score.
    * @param {Object} filterCriteria
@@ -140,9 +146,9 @@ function createAirBnBDataHandler(initialListings = []) {
     const jsonString = JSON.stringify(data, null, 2);
     await writeFile(outputPath, jsonString, 'utf-8');
   }
-
   // We store all methods in a single object for convenience
   const handler = {
+    getHighDemandListings,
     filterListings,
     computeStats,
     computeListingsByHost,

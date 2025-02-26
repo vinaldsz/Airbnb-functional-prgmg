@@ -55,7 +55,8 @@ async function main() {
     2) Compute statistics
     3) Compute listings by host (ranking)
     4) Export current data or stats
-    5) Exit
+    5) High Demand listings
+    6) Exit
     `);
 
     const choice = await askQuestion(rl, 'Enter your choice (1-5): ');
@@ -142,8 +143,12 @@ async function main() {
 
         break;
       }
-
       case '5': {
+        const highDemandListings = airbnbHandler.getHighDemandListings();
+        console.log('\nHigh Demand Listings:\n', highDemandListings);
+        break;
+      }
+      case '6': {
         exitRequested = true;
         console.log('\nExiting. Goodbye!\n');
         break;

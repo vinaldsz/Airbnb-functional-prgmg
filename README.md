@@ -108,3 +108,13 @@ function filterListingsImpure({
 * Mutates the Original Data: The original _listings array is directly mutated by adding or modifying the removed property. This violates the pure function principle because the function changes external state.
 * Side Effects: The modification of the _listings array introduces side effects. Other parts of the code that use _listings may see unintended changes because this function altered the data.
 * Non-Deterministic: The result of the function is not predictable because the state of _listings is modified within the function. If the function is called multiple times on the same dataset, the state of _listings will evolve in ways that might not be easy to track or predict.
+
+
+# Creative Addition
+
+High Demand listings are returned based on the availability in last 30 days and the review count
+
+A listing is considered hgh demand if
+1. It has less availability i.e. availability_30 < 10
+2. It has number_of_reviews >100
+
