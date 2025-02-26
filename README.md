@@ -109,6 +109,46 @@ function filterListingsImpure({
 * Side Effects: The modification of the _listings array introduces side effects. Other parts of the code that use _listings may see unintended changes because this function altered the data.
 * Non-Deterministic: The result of the function is not predictable because the state of _listings is modified within the function. If the function is called multiple times on the same dataset, the state of _listings will evolve in ways that might not be easy to track or predict.
 
+# Method Chaining in `AirbnbDataHandler.js`
+
+The `filterListings` function returns handler making methods chainable i.e. we would be able to do something like myHandler.filter( ... ).computeStats(). This approach is very concise and readable.
+
+# Method Chaining - Counter Example
+
+```javascript
+function filterListings({
+  minPrice,
+  maxPrice,
+  minRooms,
+  maxRooms,
+  minReview,
+  maxReview,
+} = {}) {
+  // Create a new array to hold the filtered listings
+  const filteredListings = _listings.filter((listing) => {
+    // We only filter if the user provided a constraint
+    if (minPrice !== undefined && listing.price < minPrice) return false;
+    if (maxPrice !== undefined && listing.price > maxPrice) return false;
+    if (minRooms !== undefined && listing.bedrooms < minRooms)
+      return false;
+    if (maxRooms !== undefined && listing.bedrooms > maxRooms)
+      return false;
+    if (minReview !== undefined && listing.review_scores_rating < minReview)
+      return false;
+    if (maxReview !== undefined && listing.review_scores_rating > maxReview)
+      return false;
+    return true;
+  });
+
+  // Return the filtered listings instead of the handler object
+  return filteredListings;
+}
+```
+
+# Why does it defy method chaining?
+
+* Returns filtered listings and not the handler object.
+* It performs only the task that it is intended to do and has less flexibility.
 
 # Creative Addition
 
