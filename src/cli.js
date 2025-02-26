@@ -112,7 +112,7 @@ async function main() {
           rl,
           'Do you want to export "listings" or "stats" or "hostRanking"? '
         );
-        const outputPath = await askQuestion(rl, 'Specify the output file path (e.g. output.json): ');
+        const outputPath = await askQuestion(rl, 'Specify the output file path (e.g. output.csv for listings and output.json for stat, ranking): ');
 
         if (exportChoice === 'listings') {
           // If you want to export just the filtered listings,
@@ -125,7 +125,7 @@ async function main() {
           // Let's do something quick:
           // (This snippet is purely for demonstration. A more robust approach is to have a dedicated "getCurrentListings()" method.)
           const listings = airbnbHandler.getListings();
-          await airbnbHandler.exportResults(outputPath, listings);
+          await airbnbHandler.exportResultsToCSV(outputPath, listings);
           console.log(`\nListings exported to: ${outputPath}\n`);
           //console.log('Exporting current listings is not directly shown. Add a method if needed.');
           //console.log('For now, we will show hostRanking or stats. Re-run and choose "hostRanking" or "stats".');

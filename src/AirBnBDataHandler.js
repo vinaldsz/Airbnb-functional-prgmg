@@ -39,6 +39,17 @@ export async function parseCSV(filePath) {
   }
 
 /**
+ * Converts an array of objects to a CSV string.
+ * @param {Object[]} data - The array of objects to be converted to CSV.
+ * @returns {string} The CSV string.
+ */
+const convertToCSV = (data) => {
+    const headers = Object.keys(data[0]); // Get column names from keys of first object
+    const rows = data.map(obj => headers.map(header => obj[header]).join(',')); // Map the data into CSV rows
+    return [headers.join(','), ...rows].join('\n'); // Combine headers and rows into a single CSV string
+  };
+
+/**
  * A factory function that creates an AirBnBDataHandler object with chainable methods.
  * @param {Listing[]} [initialListings=[]] - Optional initial listings array.
  * @returns {Object} An object containing data handling methods.
@@ -142,10 +153,16 @@ function createAirBnBDataHandler(initialListings = []) {
    * @param {Object} data - The data you want to export; can be stats or filtered listings.
    * @returns {Promise<void>} A promise that resolves when file is written.
    */
+  async function exportResultsToCSV(outputPath, data) {
+    const csvString = convertToCSV(data);
+    await writeFile(outputPath, csvString, 'utf-8');
+  }
+
   async function exportResults(outputPath, data) {
     const jsonString = JSON.stringify(data, null, 2);
     await writeFile(outputPath, jsonString, 'utf-8');
   }
+
   // We store all methods in a single object for convenience
   const handler = {
     getHighDemandListings,
@@ -153,6 +170,7 @@ function createAirBnBDataHandler(initialListings = []) {
     computeStats,
     computeListingsByHost,
     exportResults,
+    exportResultsToCSV,
     getListings
   };
 
