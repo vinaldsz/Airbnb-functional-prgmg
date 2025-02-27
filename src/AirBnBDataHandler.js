@@ -4,9 +4,9 @@
  * to load and process AirBnB listings data.
  */
 
-import { writeFile } from 'node:fs/promises';
-import csv from 'csv-parser';
-import { createReadStream } from 'node:fs';
+import { writeFile } from "node:fs/promises";
+import csv from "csv-parser";
+import { createReadStream } from "node:fs";
 
 /**
  * @typedef {Object} Listing
@@ -23,20 +23,20 @@ import { createReadStream } from 'node:fs';
  * @returns {Listing[]} Array of listing objects.
  */
 export async function parseCSV(filePath) {
-    return new Promise((resolve, reject) => {
-      const results = [];
-  
-      createReadStream(filePath)
-        .pipe(csv())
-        .on('data', (row) => {
-            const price = Number(row.price.replace(/[^0-9.]/g, ''));
-            row.price = price; // Store price as a number
-            results.push(row);
-        })
-        .on('end', () => resolve(results))
-        .on('error', (error) => reject(error));
-    });
-  }
+  return new Promise((resolve, reject) => {
+    const results = [];
+
+    createReadStream(filePath)
+      .pipe(csv())
+      .on("data", (row) => {
+        const price = Number(row.price.replace(/[^0-9.]/g, ""));
+        row.price = price; // Store price as a number
+        results.push(row);
+      })
+      .on("end", () => resolve(results))
+      .on("error", (error) => reject(error));
+  });
+}
 
 /**
  * Converts an array of objects to a CSV string.
@@ -44,10 +44,12 @@ export async function parseCSV(filePath) {
  * @returns {string} The CSV string.
  */
 const convertToCSV = (data) => {
-    const headers = Object.keys(data[0]); // Get column names from keys of first object
-    const rows = data.map(obj => headers.map(header => obj[header]).join(',')); // Map the data into CSV rows
-    return [headers.join(','), ...rows].join('\n'); // Combine headers and rows into a single CSV string
-  };
+  const headers = Object.keys(data[0]); // Get column names from keys of first object
+  const rows = data.map((obj) =>
+    headers.map((header) => obj[header]).join(",")
+  ); // Map the data into CSV rows
+  return [headers.join(","), ...rows].join("\n"); // Combine headers and rows into a single CSV string
+};
 
 /**
  * A factory function that creates an AirBnBDataHandler object with chainable methods.
@@ -84,25 +86,23 @@ function createAirBnBDataHandler(initialListings = []) {
     maxReview,
   } = {}) {
     _listings = _listings.filter((listing) => {
-        //const price = Number(listing.price.replace(/[^0-9.]/g, '')); 
-        // We only filter if the user provided a constraint
-        if (minPrice !== undefined && listing.price < minPrice) return false;
-        if (maxPrice !== undefined && listing.price > maxPrice) return false;
-        if (minRooms !== undefined && listing.bedrooms < minRooms)
-            return false;
-        if (maxRooms !== undefined && listing.bedrooms > maxRooms)
-            return false;
-        if (minReview !== undefined && listing.review_scores_rating < minReview)
-            return false;
-        if (maxReview !== undefined && listing.review_scores_rating > maxReview)
-            return false;
-        return true;
+      //const price = Number(listing.price.replace(/[^0-9.]/g, ''));
+      // We only filter if the user provided a constraint
+      if (minPrice !== undefined && listing.price < minPrice) return false;
+      if (maxPrice !== undefined && listing.price > maxPrice) return false;
+      if (minRooms !== undefined && listing.bedrooms < minRooms) return false;
+      if (maxRooms !== undefined && listing.bedrooms > maxRooms) return false;
+      if (minReview !== undefined && listing.review_scores_rating < minReview)
+        return false;
+      if (maxReview !== undefined && listing.review_scores_rating > maxReview)
+        return false;
+      return true;
     });
     return handler; // Return the handler object to enable chaining
   }
   function getListings() {
     return _listings;
-}
+  }
   /**
    * Computes statistics based on current filtered listings:
    * 1. How many listings match the filter.
@@ -113,15 +113,18 @@ function createAirBnBDataHandler(initialListings = []) {
     const count = _listings.length;
     let averagePricePerRoom = 0;
     if (count > 0) {
-        // For example: total price / total rooms
-        const totalPrice = _listings.reduce((sum, l) => sum + l.price, 0);
-        const totalRooms = _listings.reduce((sum, l) => sum + Number(l.bedrooms), 0);
-        averagePricePerRoom = totalRooms === 0 ? 0 : totalPrice / totalRooms;
+      // For example: total price / total rooms
+      const totalPrice = _listings.reduce((sum, l) => sum + l.price, 0);
+      const totalRooms = _listings.reduce(
+        (sum, l) => sum + Number(l.bedrooms),
+        0
+      );
+      averagePricePerRoom = totalRooms === 0 ? 0 : totalPrice / totalRooms;
     }
 
     return {
-        count,
-        averagePricePerRoom,
+      count,
+      averagePricePerRoom,
     };
   }
 
@@ -131,21 +134,20 @@ function createAirBnBDataHandler(initialListings = []) {
    */
   function computeListingsByHost() {
     const hostMap = _listings.reduce((acc, listing) => {
-        const hostKey = String(listing.host_id || 'unknown'); // Ensure consistent key format
-        acc[hostKey] = (acc[hostKey] || 0) + 1;
-        return acc;
+      const hostKey = String(listing.host_id || "unknown"); // Ensure consistent key format
+      acc[hostKey] = (acc[hostKey] || 0) + 1;
+      return acc;
     }, {});
-  
-    const ranking = Object.entries(hostMap)
-        .map(([host_id, count]) => ({ host_id, count }))
-        .sort((a, b) => b.count - a.count) // Sort in descending order
 
-        // Assign ranks (1st place to the host with most listings)
-        .map((entry, index) => ({ rank: index + 1, ...entry }));
-  
+    const ranking = Object.entries(hostMap)
+      .map(([host_id, count]) => ({ host_id, count }))
+      .sort((a, b) => b.count - a.count) // Sort in descending order
+
+      // Assign ranks (1st place to the host with most listings)
+      .map((entry, index) => ({ rank: index + 1, ...entry }));
+
     return ranking;
   }
-  
 
   /**
    * Exports the current listings array (or a stats object) to a user-specified file.
@@ -155,12 +157,12 @@ function createAirBnBDataHandler(initialListings = []) {
    */
   async function exportResultsToCSV(outputPath, data) {
     const csvString = convertToCSV(data);
-    await writeFile(outputPath, csvString, 'utf-8');
+    await writeFile(outputPath, csvString, "utf-8");
   }
 
   async function exportResults(outputPath, data) {
     const jsonString = JSON.stringify(data, null, 2);
-    await writeFile(outputPath, jsonString, 'utf-8');
+    await writeFile(outputPath, jsonString, "utf-8");
   }
 
   // We store all methods in a single object for convenience
@@ -171,7 +173,7 @@ function createAirBnBDataHandler(initialListings = []) {
     computeListingsByHost,
     exportResults,
     exportResultsToCSV,
-    getListings
+    getListings,
   };
 
   return handler;
@@ -183,11 +185,11 @@ function createAirBnBDataHandler(initialListings = []) {
  * @returns {Promise<Object>} A promise that resolves to the created handler with data loaded.
  */
 export async function loadAirBnBData(filePath) {
-    try {
-        const parsedListings = await parseCSV(filePath);
-        return createAirBnBDataHandler(parsedListings);
-    } catch (error) {
-        console.error('Error loading Airbnb data:', error.message);
-        throw error; // Rethrow error for handling
-    }
+  try {
+    const parsedListings = await parseCSV(filePath);
+    return createAirBnBDataHandler(parsedListings);
+  } catch (error) {
+    console.error("Error loading Airbnb data:", error.message);
+    throw error; // Rethrow error for handling
+  }
 }

@@ -4,9 +4,9 @@
  * and uses AirBnBDataHandler to process the CSV.
  */
 
-import readline from 'node:readline';
-import { stdin as input, stdout as output } from 'node:process';
-import { loadAirBnBData } from './AirBnBDataHandler.js';
+import readline from "node:readline";
+import { stdin as input, stdout as output } from "node:process";
+import { loadAirBnBData } from "./AirBnBDataHandler.js";
 
 /**
  * Creates a prompt in the console with "~>".
@@ -27,7 +27,7 @@ async function main() {
   //    e.g. node cli.js ./data/listings.csv
   const csvFilePath = process.argv[2];
   if (!csvFilePath) {
-    console.error('Please provide the path to the CSV file as an argument.');
+    console.error("Please provide the path to the CSV file as an argument.");
     process.exit(1);
   }
 
@@ -36,14 +36,14 @@ async function main() {
   try {
     airbnbHandler = await loadAirBnBData(csvFilePath);
   } catch (error) {
-    console.error('Error reading CSV file:', error.message);
+    console.error("Error reading CSV file:", error.message);
     process.exit(1);
   }
 
   // 3) Set up the readline interface
   const rl = readline.createInterface({ input, output });
 
-  console.log('\nWelcome to the Airbnb Data Processor!\n');
+  console.log("\nWelcome to the Airbnb Data Processor!\n");
 
   // We'll loop the user through a mini-menu
   let exitRequested = false;
@@ -59,17 +59,35 @@ async function main() {
     6) Exit
     `);
 
-    const choice = await askQuestion(rl, 'Enter your choice (1-5): ');
+    const choice = await askQuestion(rl, "Enter your choice (1-6): ");
 
     switch (choice.trim()) {
-      case '1': {
+      case "1": {
         // Ask filter questions
-        const minPrice = await askQuestion(rl, 'Minimum price (leave blank if none)? ');
-        const maxPrice = await askQuestion(rl, 'Maximum price (leave blank if none)? ');
-        const minRooms = await askQuestion(rl, 'Minimum rooms (leave blank if none)? ');
-        const maxRooms = await askQuestion(rl, 'Maximum rooms (leave blank if none)? ');
-        const minReview = await askQuestion(rl, 'Minimum review score (leave blank if none)? ');
-        const maxReview = await askQuestion(rl, 'Maximum review score (leave blank if none)? ');
+        const minPrice = await askQuestion(
+          rl,
+          "Minimum price (leave blank if none)? "
+        );
+        const maxPrice = await askQuestion(
+          rl,
+          "Maximum price (leave blank if none)? "
+        );
+        const minRooms = await askQuestion(
+          rl,
+          "Minimum rooms (leave blank if none)? "
+        );
+        const maxRooms = await askQuestion(
+          rl,
+          "Maximum rooms (leave blank if none)? "
+        );
+        const minReview = await askQuestion(
+          rl,
+          "Minimum review score (leave blank if none)? "
+        );
+        const maxReview = await askQuestion(
+          rl,
+          "Maximum review score (leave blank if none)? "
+        );
 
         // Convert user input to numbers or undefined
         const filterCriteria = {
@@ -83,40 +101,43 @@ async function main() {
 
         // Apply filter
         console.log(airbnbHandler.filterListings(filterCriteria).getListings());
-        console.log('\nListings have been filtered based on your criteria.\n');
+        console.log("\nListings have been filtered based on your criteria.\n");
         break;
       }
 
-      case '2': {
+      case "2": {
         // Compute stats
         const stats = airbnbHandler.computeStats();
-        console.log('\nStats:', stats, '\n');
+        console.log("\nStats:", stats, "\n");
         break;
       }
 
-      case '3': {
+      case "3": {
         // Compute listings by host
         const ranking = airbnbHandler.computeListingsByHost();
-        console.log('\nListings by Host (sorted desc):');
+        console.log("\nListings by Host (sorted desc):");
         ranking.forEach((host) => {
           console.log(`Host: ${host.host_id}, Count: ${host.count}`);
         });
-        console.log('');
+        console.log("");
         break;
       }
 
-      case '4': {
+      case "4": {
         // Export data
         // Ask if user wants to export the filtered listings or some stats
         const exportChoice = await askQuestion(
           rl,
           'Do you want to export "listings" or "stats" or "hostRanking"? '
         );
-        const outputPath = await askQuestion(rl, 'Specify the output file path (e.g. output.csv for listings and output.json for stat, ranking): ');
+        const outputPath = await askQuestion(
+          rl,
+          "Specify the output file path (e.g. output.csv for listings and output.json for stat, ranking): "
+        );
 
-        if (exportChoice === 'listings') {
+        if (exportChoice === "listings") {
           // If you want to export just the filtered listings,
-          // you could store them in a variable. 
+          // you could store them in a variable.
           // In this example, we re-use the filter inside the handler.
           // Since we don’t have a direct “getFilteredListings()” method,
           // you could add one or just rely on the `_listings` in your stats or host ranking computations.
@@ -129,33 +150,33 @@ async function main() {
           console.log(`\nListings exported to: ${outputPath}\n`);
           //console.log('Exporting current listings is not directly shown. Add a method if needed.');
           //console.log('For now, we will show hostRanking or stats. Re-run and choose "hostRanking" or "stats".');
-        } else if (exportChoice === 'stats') {
+        } else if (exportChoice === "stats") {
           const stats = airbnbHandler.computeStats();
           await airbnbHandler.exportResults(outputPath, stats);
           console.log(`\nStats exported to: ${outputPath}\n`);
-        } else if (exportChoice === 'hostRanking') {
+        } else if (exportChoice === "hostRanking") {
           const ranking = airbnbHandler.computeListingsByHost();
           await airbnbHandler.exportResults(outputPath, ranking);
           console.log(`\nHost ranking exported to: ${outputPath}\n`);
         } else {
-          console.log('\nInvalid export choice.\n');
+          console.log("\nInvalid export choice.\n");
         }
 
         break;
       }
-      case '5': {
+      case "5": {
         const highDemandListings = airbnbHandler.getHighDemandListings();
-        console.log('\nHigh Demand Listings:\n', highDemandListings);
+        console.log("\nHigh Demand Listings:\n", highDemandListings);
         break;
       }
-      case '6': {
+      case "6": {
         exitRequested = true;
-        console.log('\nExiting. Goodbye!\n');
+        console.log("\nExiting. Goodbye!\n");
         break;
       }
 
       default:
-        console.log('\nInvalid choice. Please select a valid option.\n');
+        console.log("\nInvalid choice. Please select a valid option.\n");
         break;
     }
   }
@@ -164,5 +185,5 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error('Error in CLI:', err);
+  console.error("Error in CLI:", err);
 });
